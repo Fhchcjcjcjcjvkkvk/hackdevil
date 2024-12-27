@@ -6,6 +6,8 @@
 #include <map>
 #include <vector>
 #include <iomanip>
+#include <iphlpapi.h>  // for IP headers
+#include <ws2tcpip.h>  // for TCP/UDP headers
 
 #define ETHERTYPE_IP 0x0800
 #define ETHERTYPE_ARP 0x0806
