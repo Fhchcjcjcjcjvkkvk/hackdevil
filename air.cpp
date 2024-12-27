@@ -5,6 +5,10 @@
 #include <map>
 #include <vector>
 #include <iomanip>
+#include <netinet/ip.h>
+#include <netinet/ether.h>
+#include <netinet/tcp.h>
+#include <netinet/udp.h>
 
 #define ETHERTYPE_IP 0x0800
 #define ETHERTYPE_ARP 0x0806
@@ -21,6 +25,7 @@ void packetHandler(u_char* userData, const pcap_pkthdr* pkthdr, const u_char* pa
 void parseHttpRequest(const u_char* packet, int size);
 void parseDnsRequest(const u_char* packet, int size);
 void printMacAddress(const u_char* mac);
+void parseIpPacket(const u_char* packet, int size);
 
 int main() {
     cout << "SELECT DRIVER:\n";
