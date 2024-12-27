@@ -1,18 +1,14 @@
 #include <iostream>
 #include <pcap.h>
 #include <winsock2.h>
+#include <windows.h>
 #include <string>
 #include <map>
 #include <vector>
 #include <iomanip>
-#include <netinet/ip.h>
-#include <netinet/ether.h>
-#include <netinet/tcp.h>
-#include <netinet/udp.h>
 
 #define ETHERTYPE_IP 0x0800
 #define ETHERTYPE_ARP 0x0806
-#define ETHERTYPE_IPV6 0x86DD
 #define DNS_PORT 53
 #define HTTP_PORT 80
 
