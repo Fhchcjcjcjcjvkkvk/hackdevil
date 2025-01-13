@@ -4,12 +4,14 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
 from cryptography.fernet import Fernet
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QTextEdit, QDialog, QGridLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QTextEdit, QDialog, QGridLayout, QLabel
+from PyQt5.QtGui import QPixmap
 import os
 import random
 import smtplib
 from email.mime.text import MIMEText
 import time
+import requests
 
 # Server's IP address and port
 SERVER_HOST = "10.0.1.35"  # Update if the server is on a different machine
@@ -62,6 +64,23 @@ def decrypt_message(encrypted_message):
     # Decrypt the message with Fernet
     return fernet.decrypt(unpadded_data).decode()
 
+
+# Load background image directly from the URL using QPixmap
+def load_background_image(url):
+    try:
+        response = requests.get(url, stream=True)
+        pixmap = QPixmap()
+        pixmap.loadFromData(response.content)  # Load image from response content
+        print("[+] Background image loaded.")
+        return pixmap
+    except Exception as e:
+        print(f"[!] Error loading background image: {e}")
+        return None
+
+
+# Load the background image
+background_image_url = "https://github.com/Fhchcjcjcjcjvkkvk/hackdevil/blob/main/vortex.png?raw=true"
+background_pixmap = load_background_image(background_image_url)
 
 # Initialize TCP socket
 s = socket.socket()
@@ -166,12 +185,19 @@ else:
     window.setWindowTitle("Vortex")
     window.setGeometry(100, 100, 500, 400)
 
+    # Set background image if available
+    if background_pixmap:
+        background_label = QLabel(window)
+        background_label.setPixmap(background_pixmap)
+        background_label.setScaledContents(True)
+        background_label.setGeometry(0, 0, window.width(), window.height())
+
     main_layout = QVBoxLayout()
     message_layout = QHBoxLayout()
 
     chat_display = QTextEdit()
     chat_display.setReadOnly(True)
-    chat_display.setStyleSheet("background-color: #1e1e1e; color: white;")
+    chat_display.setStyleSheet("background-color: rgba(0, 0, 0, 0.7); color: white;")
     main_layout.addWidget(chat_display)
 
     message_input = QLineEdit()
