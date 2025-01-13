@@ -10,6 +10,7 @@ import random
 import smtplib
 from email.mime.text import MIMEText
 import time
+from supabase import create_client, Client
 
 # Server's IP address and port
 SERVER_HOST = "10.0.1.35"  # Update if the server is on a different machine
@@ -22,6 +23,11 @@ key = bytes.fromhex("a6851b9258192de78a4539464f58cb85b7d2ddd88ca7f23bc86075a4160
 # Fernet key
 fernet_key = b"ZILOyzMczOcdCWLTYqVcVMU4lCnQfLo0aowZBwMryX4="
 fernet = Fernet(fernet_key)
+
+# Initialize Supabase client
+url = "https://uqwylxwxnxasfrrxmcsp.supabase.co"
+api_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxd3lseHd4bnhhc2ZycnhtY3NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY0OTYzMTIsImV4cCI6MjA1MjA3MjMxMn0.63rctEDbwaOhRu8D2yM2z3XFoklTfcrN7VQzKNfJozY"
+supabase: Client = create_client(url, api_key)
 
 
 # Function to encrypt messages using AES-GCM and Fernet
@@ -124,6 +130,29 @@ else:
     # Initialize chat history as a list (in-memory storage)
     chat_history = []
 
+
+    # Function to fetch previous messages from Supabase
+    def fetch_previous_messages():
+        try:
+            # Fetch messages from Supabase
+            response = supabase.table('desktop').select('user, message').execute()
+
+            if response.status_code == 200:
+                # Successfully fetched messages
+                messages = response.data
+                for message in messages:
+                    # Add each message to the chat display
+                    chat_display.append(f"<font color='blue'>[{message['user']}]: {message['message']}</font>")
+            else:
+                print("[!] Error fetching messages from Supabase")
+        except Exception as e:
+            print(f"[!] Error: {e}")
+
+
+    # Fetch and display previous messages
+    fetch_previous_messages()
+
+
     # Emoji Picker Dialog
     class EmojiPickerDialog(QDialog):
         def __init__(self):
@@ -166,27 +195,17 @@ else:
     window.setWindowTitle("Vortex")
     window.setGeometry(100, 100, 500, 400)
 
-    # Set background image for the window
-    window.setStyleSheet("""
-        QWidget {
-            background-image: url('https://raw.githubusercontent.com/Fhchcjcjcjcjvkkvk/hackdevil/main/vortex.png');
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: cover;
-        }
-    """)
-
     main_layout = QVBoxLayout()
     message_layout = QHBoxLayout()
 
     chat_display = QTextEdit()
     chat_display.setReadOnly(True)
-    chat_display.setStyleSheet("background-color: rgba(30, 30, 30, 0.8); color: white;")
+    chat_display.setStyleSheet("background-color: #1e1e1e; color: white;")
     main_layout.addWidget(chat_display)
 
     message_input = QLineEdit()
     message_input.setPlaceholderText("Type your message...")
-    message_input.setStyleSheet("background-color: rgba(51, 51, 51, 0.8); color: white; border: 1px solid #555555;")
+    message_input.setStyleSheet("background-color: #333333; color: white; border: 1px solid #555555;")
     message_layout.addWidget(message_input)
 
     send_button = QPushButton("➤")
