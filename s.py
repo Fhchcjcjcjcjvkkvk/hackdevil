@@ -1,37 +1,42 @@
-import tkinter as tk
-from PIL import Image, ImageTk
+import sys
 import requests
 from io import BytesIO
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel
+from PyQt5.QtGui import QPixmap, QPalette
+from PyQt5.QtCore import Qt
 
-# Create the main application window
-root = tk.Tk()
-root.title("App with Background Image")
+class AppWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
 
-# Set the size of the window
-root.geometry("800x600")
+        # Set window properties
+        self.setWindowTitle("PyQt5 App with Web Background")
+        self.setGeometry(100, 100, 800, 600)
 
-# Load the image from the URL
-image_url = "https://github.com/Fhchcjcjcjcjvkkvk/hackdevil/blob/main/vortex.png?raw=true"
-response = requests.get(image_url)
-img_data = BytesIO(response.content)
+        # Set background image from web
+        self.set_background()
 
-# Open the image using PIL
-background_image = Image.open(img_data)
-background_image = background_image.resize((800, 600), Image.ANTIALIAS)  # Resize to fit window
+        # Create a simple label
+        label = QLabel("Hello, PyQt5!", self)
+        label.setStyleSheet("font-size: 24px; color: white;")
+        label.setGeometry(300, 250, 200, 50)
 
-# Convert to PhotoImage format suitable for Tkinter
-background_photo = ImageTk.PhotoImage(background_image)
+    def set_background(self):
+        # Fetch the image from the web
+        url = "https://raw.githubusercontent.com/Fhchcjcjcjcjvkkvk/hackdevil/main/vortex.png"
+        response = requests.get(url)
+        if response.status_code == 200:
+            # Convert image to QPixmap
+            pixmap = QPixmap()
+            pixmap.loadFromData(BytesIO(response.content).read())
 
-# Create a canvas to display the background image
-canvas = tk.Canvas(root, width=800, height=600)
-canvas.pack(fill="both", expand=True)
+            # Set the image as the background
+            palette = self.palette()
+            palette.setBrush(QPalette.Background, pixmap)
+            self.setPalette(palette)
 
-# Display the background image on the canvas
-canvas.create_image(0, 0, image=background_photo, anchor="nw")
-
-# Example of adding a label on top of the background
-label = tk.Label(root, text="Hello, Welcome to the App!", font=("Helvetica", 24), bg="white", fg="black")
-label.place(relx=0.5, rely=0.1, anchor="center")
-
-# Run the app
-root.mainloop()
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    window = AppWindow()
+    window.show()
+    sys.exit(app.exec_())
