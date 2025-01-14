@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+</head>
+<body>
+    <h2>Upload Your File (Max Size: 10 MB)</h2>
+    <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" id="fileInput" name="file" accept="*/*" required>
+        <button type="submit">Upload</button>
+    </form>
+
+    <script>
+        const form = document.getElementById('uploadForm');
+        const fileInput = document.getElementById('fileInput');
+        const maxFileSize = 10 * 1024 * 1024; // 10 MB in bytes
+
+        form.addEventListener('submit', function(event) {
+            const file = fileInput.files[0];
+            if (file && file.size > maxFileSize) {
+                event.preventDefault(); // Prevent form submission
+                alert("File size exceeds the 10 MB limit. Please choose a smaller file.");
+            }
+        });
+    </script>
+</body>
+</html>
