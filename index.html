@@ -3,128 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Upload Chat App</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            padding: 20px;
-        }
-        .upload-container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 30px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        }
-        .file-input {
-            display: block;
-            margin-bottom: 20px;
-        }
-        .button {
-            padding: 10px 15px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .button:disabled {
-            background-color: #ccc;
-        }
-        .message {
-            margin-top: 15px;
-        }
-    </style>
+    <title>File Upload and Download</title>
 </head>
 <body>
-    <div class="upload-container">
-        <h2>Upload Your File</h2>
-        <form id="uploadForm">
-            <input type="file" id="fileInput" class="file-input" accept="*/*" />
-            <button type="submit" class="button" id="uploadButton">Upload File</button>
-        </form>
+    <h2>Upload a File</h2>
+    <form id="fileForm" enctype="multipart/form-data">
+        <label for="file">Choose a file (max 10MB):</label>
+        <input type="file" id="file" name="file" required>
+        <button type="submit">Upload</button>
+    </form>
 
-        <div class="message" id="message"></div>
-
-        <div id="downloadSection" style="display: none;">
-            <h3>Download File</h3>
-            <button class="button" id="downloadButton">Download</button>
-        </div>
+    <h2>Download File</h2>
+    <div id="fileInfo" style="display:none;">
+        <p>File uploaded successfully!</p>
+        <button id="downloadBtn">Download File</button>
     </div>
 
     <script>
-        const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB in bytes
-        const uploadForm = document.getElementById('uploadForm');
-        const fileInput = document.getElementById('fileInput');
-        const uploadButton = document.getElementById('uploadButton');
-        const messageDiv = document.getElementById('message');
-        const downloadSection = document.getElementById('downloadSection');
-        const downloadButton = document.getElementById('downloadButton');
-        let fileUrl = '';
-
-        // File Upload Event
-        uploadForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            // Check if file is selected
-            if (!fileInput.files[0]) {
-                showMessage('Please select a file to upload.');
-                return;
-            }
-
+        // Handling file upload
+        document.getElementById("fileForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const fileInput = document.getElementById("file");
             const file = fileInput.files[0];
 
-            // Check file size
-            if (file.size > MAX_FILE_SIZE) {
-                showMessage('File size exceeds 10 MB limit. Please upload a smaller file.');
+            // Check file size limit (10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                alert("File size must be less than 10 MB.");
                 return;
             }
 
-            // Display loading message
-            showMessage('Uploading file...');
+            // Prepare the form data
+            const formData = new FormData();
+            formData.append("file", file);
 
             try {
-                // Upload file to server (Implement your server-side logic here)
-                // Example: Send file to server using FormData (encrypted on server)
-                const formData = new FormData();
-                formData.append('file', file);
-
-                const response = await fetch('/upload', {
-                    method: 'POST',
+                const response = await fetch("/upload", {
+                    method: "POST",
                     body: formData
                 });
 
-                const data = await response.json();
-
-                // Handle server response
-                if (data.success) {
-                    fileUrl = data.url;  // Assuming the server returns a URL to the uploaded file
-                    showMessage('File uploaded successfully.');
-                    showDownloadButton();
+                if (response.ok) {
+                    const data = await response.json();
+                    const fileUrl = data.fileUrl;
+                    document.getElementById("fileInfo").style.display = "block";
+                    document.getElementById("downloadBtn").onclick = function() {
+                        window.location.href = fileUrl;
+                    };
                 } else {
-                    showMessage('File upload failed. Please try again.');
+                    alert("Error uploading file.");
                 }
             } catch (error) {
-                showMessage('Error uploading file. Please try again.');
-            }
-        });
-
-        // Display messages to the user
-        function showMessage(message) {
-            messageDiv.innerText = message;
-        }
-
-        // Show download button
-        function showDownloadButton() {
-            downloadSection.style.display = 'block';
-        }
-
-        // Handle download button click
-        downloadButton.addEventListener('click', () => {
-            if (fileUrl) {
-                window.location.href = fileUrl + '/' + encodeURIComponent(fileUrl.split('/').pop());
+                console.error("Error:", error);
             }
         });
     </script>
