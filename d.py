@@ -1,9 +1,9 @@
 from supabase import create_client, Client
-import os
+import uuid
 
 # Inicializace Supabase klienta
-url = "https://uqwylxwxnxasfrrxmcsp.supabase.co"  # Nahraď vlastním URL
-key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxd3lseHd4bnhhc2ZycnhtY3NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY0OTYzMTIsImV4cCI6MjA1MjA3MjMxMn0.63rctEDbwaOhRu8D2yM2z3XFoklTfcrN7VQzKNfJozY"  # Nahraď vlastním veřejným klíčem
+url = "https://uqwylxwxnxasfrrxmcsp.supabase.co"  # Tvoje Supabase URL
+key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxd3lseHd4bnhhc2ZycnhtY3NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY0OTYzMTIsImV4cCI6MjA1MjA3MjMxMn0.63rctEDbwaOhRu8D2yM2z3XFoklTfcrN7VQzKNfJozY"  # Tvůj Supabase klíč
 supabase: Client = create_client(url, key)
 
 def upload_background(image_path, user_id, chat_id):
@@ -46,8 +46,8 @@ def get_chat_background(user_id, chat_id):
 
 # Příklad použití
 image_path = r"C:\devil\vortex.png"  # Cesta k obrázku (surový řetězec)
-user_id = "user-uuid"  # UUID uživatele
-chat_id = "chat-uuid"  # UUID chatu
+user_id = str(uuid.uuid4())  # Generuje UUID pro uživatele
+chat_id = str(uuid.uuid4())  # Generuje UUID pro chat
 
 # Nahrání pozadí
 background_url = upload_background(image_path, user_id, chat_id)
